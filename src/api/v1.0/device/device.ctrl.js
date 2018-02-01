@@ -96,9 +96,9 @@ exports.deviceRegister = async (ctx) => {
 }
 
 /**
- * @api {GET} /device/token/:UUID 토큰 요청
- * @apiName 접속 토큰 요청
- * @apiParam {String{1..60}} UUID 기기의 UUID
+ * @api {GET} /device/token/:UUID request token
+ * @apiName request token
+ * @apiParam {String{1..60}} device's UUID
  */
 exports.getToekn = async (ctx) => {
     const { UUID } = ctx.params;

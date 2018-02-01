@@ -7,5 +7,6 @@ const api = new Router();
 
 api.use('/base', base.routes());
 api.use('/device', device.routes());
+api.use('/user', user.routes());
 
 module.exports = api;

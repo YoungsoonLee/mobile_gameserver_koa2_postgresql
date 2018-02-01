@@ -11,11 +11,13 @@ const bodyParser = require('koa-bodyparser');
 const compress = require('koa-compress');
 
 const api = require('./api');
+const jwtMiddleware = require('lib/auth');
 
 const app = new Koa();
 
 app.use(cors());
 app.use(compress());
+app.use(jwtMiddleware);
 app.use(bodyParser());
 
 //router

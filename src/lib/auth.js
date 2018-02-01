@@ -22,26 +22,32 @@ exports.decodeToken = (token) =>{
 /**
  * JWT 토큰을 검증할 때 사용된다.
  */
-exports.isAuthenticated = async (ctx, next) => {
-    debug('isAuthenticated');
-    jwt.verify(ctx.request.headers.authorization, SECRET, (err, decoded)=>{
-        if(err) {
-            // IF A USER ISN'T LOGGED IN, THEN REDIRECT THEM SOMEWHERE
-            //res.status(401).send('The request has not been applied because it lacks valid authentication credentials for the target resource.')
-            ctx.status = 401;
-            ctx.body = {
-                message: 'he request has not been applied because it lacks valid authentication credentials for the target resource.'
+module.exports = async (ctx, next) => {
+    const token = ctx.request.headers.authorization;
+    if(!token) { 
+        // if there is no token, skip!
+        ctx.request.user = null;
+        return next(); 
+    }
+
+    try{
+        jwt.verify(token, SECRET, (err, decoded)=>{
+            if(err) {
+                ctx.request.user = null;
             }
-            return;
-        }
-        else {
-            // Attach user to request
-            // request에 user정보를 포함하여 전송한다.
-            ctx.request.user = {
-                GameUserID:decoded.GameUserID,
-                GameDeviceUID:decoded.GameDeviceUID
-            };
-            return next();
-        }
-    });
+            else {
+                // Attach user to request
+                // request에 user정보를 포함하여 전송한다.
+                ctx.request.user = {
+                    GameUserID:decoded.GameUserID,
+                    GameDeviceUID:decoded.GameDeviceUID
+                };
+            }
+        });
+    }catch(e){
+        ctx.request.user = null;
+    }   
+    return next(); 
+
+    
 }

@@ -1,1 +1,1 @@
-# mobile gameserver_koa_azure_postgreSQL
+# mobile gameserver_koa_postgreSQL

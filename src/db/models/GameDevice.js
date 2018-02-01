@@ -22,7 +22,7 @@ var GameDevice = bookshelf.Model.extend({
             }).catch(function(err) {
                 reject(err);
             });
-    });
+        });
     }
 });
 
