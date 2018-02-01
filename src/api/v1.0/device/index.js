@@ -6,6 +6,6 @@ const deviceCtrl = require('./device.ctrl');
 
 // POST regider device
 device.post('/', deviceCtrl.deviceRegister);
-device.get('/token/:UUID', deviceCtrl.getToekn);
+device.get('/token/:uuid', deviceCtrl.getToekn);
 
 module.exports = device;

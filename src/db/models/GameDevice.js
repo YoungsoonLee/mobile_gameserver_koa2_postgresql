@@ -3,19 +3,19 @@ var bookshelf = require('db');
 //bookshelf.plugin('pagination');
 
 var GameDevice = bookshelf.Model.extend({
-    tableName: 'GameDevice',
-    idAttribute: 'GameDeviceUID'
+    tableName: 'game_device',
+    idAttribute: 'game_device_id'
 },{
     //static methods
-    findByUUID: function(UUID){
-        return  this.where({ UUID: UUID }).first();
+    findByUUID: function(uuid){
+        return  this.where({ uuid }).first();
     },
-    addDevice: function(UUID, DeviceType) {
+    addDevice: function(uuid, device_type) {
         return new Promise(function(resolve, reject) {
             new GameDevice().save(
                 {
-                    UUID,
-                    DeviceType,
+                    uuid,
+                    device_type,
                 }
             ).then(function(GameDevice) {
                 resolve(GameDevice.toJSON());

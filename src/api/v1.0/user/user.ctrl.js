@@ -29,7 +29,7 @@ exports.getUserInfo = async (ctx) => {
     let updateLoginInfo = null;
     try {
         //returned JSON
-        updateLoginInfo = await User.updateLogin(user.GameUserID);
+        updateLoginInfo = await User.updateLogin(user.game_user_id);
     } catch (e) {
         log.error('[getUserInfo]','[updateLogin]', user, e.message);
 
@@ -51,22 +51,22 @@ exports.getUserInfo = async (ctx) => {
 /**
  * @api {POST} /user register user
  * @apiName register device
- * @apiParam {String{1..60}} NickName 
- * @apiParam {String} Locale 
- * @apiParam {String{1..60}} device's UUID
- * @apiParam {Number} OffsetTime timezone을 UTC+x 
+ * @apiParam {String{1..60}} nickname 
+ * @apiParam {String} locale 
+ * @apiParam {String{1..60}} device's uuid
+ * @apiParam {Number} offset_time timezone을 UTC+x 
  *
- * return: token with GameUserID, GameDeviceUID
+ * return: token with game_user_id, game_device_id
  */
 exports.registerUser = async (ctx) => {
     const { body } = ctx.request;
-    const { NickName, Locale, UUID, OffsetTime } = body;
+    const { nickname, locale, uuid, offset_time } = body;
 
     const schema = Joi.object({
-        NickName: Joi.string().required(), 
-        Locale: Joi.string().required(), 
-        UUID: Joi.string().required(), 
-        OffsetTime: Joi.number().required()
+        nickname: Joi.string().required(), 
+        locale: Joi.string().required(), 
+        uuid: Joi.string().required(), 
+        offset_time: Joi.number().required()
       });
 
     const result = Joi.validate(body, schema);
@@ -83,9 +83,9 @@ exports.registerUser = async (ctx) => {
     let checkUUID = null;
     try{
         // return model
-        checkUUID = await Device.findByUUID(UUID);
+        checkUUID = await Device.findByUUID(uuid);
     }catch(e){
-        log.error('[UserRegister]','[findByUUID]', UUID, e.message);
+        log.error('[UserRegister]','[findByUUID]', uuid, e.message);
 
         ctx.status = 500; // Internal server error
         ctx.body = {
@@ -102,14 +102,14 @@ exports.registerUser = async (ctx) => {
         return;
     }
 
-    if(checkUUID.get('GameUserID') === 0) {
+    if(checkUUID.get('game_user_id') === 0) {
         // check nickname
         let existsNickName = null;
         try{
             // return model
-            existsNickName = await User.findByNickName(NickName)
+            existsNickName = await User.findByNickName(nickname)
         }catch(e){
-            log.error('[UserRegister]','[findByNickName]', NickName, e.message);
+            log.error('[UserRegister]','[findByNickName]', nickname, e.message);
 
             ctx.status = 500; // Internal server error
             ctx.body = {
@@ -129,9 +129,9 @@ exports.registerUser = async (ctx) => {
             let registerUser = null;
             try{
                 // return JSON
-                registerUser = await User.registerUser(NickName, Locale, OffsetTime)
+                registerUser = await User.registerUser(nickname, locale, uuid, offset_time)
             }catch(e){
-                log.error('[UserRegister]','[registerUser]', NickName, Locale, OffsetTime, e.message);
+                log.error('[UserRegister]','[registerUser]', nickname, locale, uuid, offset_time, e.message);
 
                 ctx.status = 500; // Internal server error
                 ctx.body = {
@@ -140,9 +140,15 @@ exports.registerUser = async (ctx) => {
                 return;
             }
 
-            if(!registerUser){
+            //console.log(registerUser);
+
+            if(registerUser !== null){
                 // make token
-                console.log(registerUser);
+                ctx.status = 201; 
+                ctx.body = {
+                    registerUser
+                }
+                return;
 
             }else{
                 ctx.status = 500; // Internal server error

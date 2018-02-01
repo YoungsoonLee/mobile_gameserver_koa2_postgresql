@@ -39,8 +39,8 @@ module.exports = async (ctx, next) => {
                 // Attach user to request
                 // request에 user정보를 포함하여 전송한다.
                 ctx.request.user = {
-                    GameUserID:decoded.GameUserID,
-                    GameDeviceUID:decoded.GameDeviceUID
+                    game_user_id:decoded.game_user_id,
+                    game_device_id:decoded.game_device_id
                 };
             }
         });

@@ -5,15 +5,15 @@ var bookshelf = require('db');
 const GameDevice = require('./GameDevice')
 
 var GameUser = bookshelf.Model.extend({
-    tableName: 'GameUser',
-    idAttribute: 'GameUserID'
+    tableName: 'game_user',
+    idAttribute: 'game_user_id'
 },{
     //static methods
-    updateLogin: function(GameUserID) {
+    updateLogin: function(game_user_id) {
         return new Promise(function(resolve, reject) {
-            new GameUser({ GameUserID })
+            new GameUser({ game_user_id })
                 .save({
-                    loginAt: provider
+                    login_at: moment().format('YYYY-MM-DDTHH:mm:ss.mm')
                 })
                 .then((user)=>{
                     resolve(user.toJSON());
@@ -24,34 +24,36 @@ var GameUser = bookshelf.Model.extend({
                 });
         });
     },
-    findByNickName: function(NickName) {
-        return  this.where({ NickName }).first();
+    findByNickName: function(nickname) {
+        return  this.where({ nickname }).first();
     },
-    registerUser: function(NickName, Locale, UUID, OffsetTime) {
+    registerUser: function(nickname, locale, uuid, offset_time) {
+        console.log("registerUser: ", nickname, locale, uuid, offset_time)
         return new Promise(function(resolve, reject) {
             new GameUser().save(
                 {
-                    NickName,
-                    Locale,
-                    OffsetTime
+                    nickname,
+                    locale,
+                    offset_time
                 }
-            ).then(function(gameuser) {
+            ).then(function(user) {
                 // update GameDevice
-                new GameDevice({UUID}).save({
-                    GameUserID: gameuser.get('GameUserID')
-                })
-                .then((device)=>{
-                    resultData = {
-                        GameUserID: gameuser.get('GameUserID'),
-                        GameDeviceID: device.get('GameDeviceUID')
-                    }
-                    resolve(resultData);
-                })
-                .catch((err)=>{
-                    console.log('[registerUser] update gamedevice error: ', err);
-                    reject(err);
+                new GameDevice({uuid}).fetch().then((device)=>{
+                    device.set('game_user_id', user.get('game_user_id'));
+                    device.save(device.changed, {patch: true}).then(function() {
+                        resultData = {
+                            game_user_id: user.get('game_user_id'),
+                            game_device_id: device.get('game_device_id')
+                        }
+                        resolve(resultData);
+                    }).catch(function(err) {
+                        console.log('[update Profile] save update reset password error: ', err);
+                        reject(err);
+                    });
+                }).catch((err)=>{
+                    console.log('[update Profile] fetch reset password error: ', err);
+                    reject(null);
                 });
-
 
             }).catch(function(err) {
                 reject(err);

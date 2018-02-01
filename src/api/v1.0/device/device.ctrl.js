@@ -10,16 +10,16 @@ const auth = require('lib/auth');
 /**
  * @api {POST} /
  * @apiName mobile device register
- * @apiParam {String{1..60}} device UUID
- * @apiParam {Number} DeviceType 1:aOS, 2:iOS, 10:UnityEditor
+ * @apiParam {String{1..60}} device uuid
+ * @apiParam {Number} device_type 1:aOS, 2:iOS, 10:UnityEditor
  */
 exports.deviceRegister = async (ctx) => {
     const { body } = ctx.request;
-    const { UUID, DeviceType } = body;
+    const { uuid, device_type } = body;
 
     const schema = Joi.object({
-        UUID: Joi.string().required(), 
-        DeviceType: Joi.number().integer().required()
+        uuid: Joi.string().required(), 
+        device_type: Joi.number().integer().required()
       });
 
     const result = Joi.validate(body, schema);
@@ -44,9 +44,9 @@ exports.deviceRegister = async (ctx) => {
     let existing = null;
     try {
         //returned model
-        existing = await Device.findByUUID(UUID);
+        existing = await Device.findByUUID(uuid);
     } catch (e) {
-        log.error('[DeviceRegister]','[findByUUID]', UUID, e.message);
+        log.error('[DeviceRegister]','[findByUUID]', uuid, e.message);
 
         ctx.status = 500; // Internal server error
         ctx.body = {
@@ -59,9 +59,9 @@ exports.deviceRegister = async (ctx) => {
         // add new device. addDevice(UUID, DeviceType)
         let addDevice = null;
         try{
-            addDevice = await Device.addDevice(UUID, DeviceType)
+            addDevice = await Device.addDevice(uuid, device_type)
         }catch(e){
-            log.error('[DeviceRegister]','[addDevice]', UUID, DeviceType, e);
+            log.error('[DeviceRegister]','[addDevice]', uuid, device_type, e);
 
             ctx.status = 500; // Internal server error
             ctx.body = {
@@ -72,8 +72,8 @@ exports.deviceRegister = async (ctx) => {
 
         if(addDevice){
             ctx.body = {
-                UUID: addDevice.UUID,
-                DeviceType: addDevice.DeviceType
+                uuid: addDevice.uuid,
+                device_type: addDevice.device_type
             };
             return;
         }else{
@@ -89,27 +89,27 @@ exports.deviceRegister = async (ctx) => {
     }
 
     ctx.body = {
-        UUID,
-        DeviceType
+        uuid,
+        device_type
     };
     return;
 }
 
 /**
- * @api {GET} /device/token/:UUID request token
+ * @api {GET} /device/token/:uuid request token
  * @apiName request token
- * @apiParam {String{1..60}} device's UUID
+ * @apiParam {String{1..60}} device's uuid
  */
 exports.getToekn = async (ctx) => {
-    const { UUID } = ctx.params;
+    const { uuid } = ctx.params;
 
     /* Check already registerd Device with UUID */
     let existing = null;
     try {
         //returned model
-        existing = await Device.findByUUID(UUID);
+        existing = await Device.findByUUID(uuid);
     } catch (e) {
-        log.error('[getToekn]','[findByUUID]', UUID, e.message);
+        log.error('[getToekn]','[findByUUID]', uuid, e.message);
 
         ctx.status = 500; // Internal server error
         ctx.body = {
@@ -125,7 +125,7 @@ exports.getToekn = async (ctx) => {
         }
         return;
     }else{
-        if ( existing.get('GameUserID') === 0){
+        if ( existing.get('game_user_id') === 0){
             ctx.status = 400; 
             ctx.body = {
                 message: 'Error registered device but userid is null'
@@ -133,7 +133,7 @@ exports.getToekn = async (ctx) => {
             return;
         }
 
-        if ( !existing.get('MainFlag')){
+        if ( !existing.get('main_flag')){
             ctx.status = 400; 
             ctx.body = {
                 message: 'Error registered device but not main device'
@@ -142,8 +142,8 @@ exports.getToekn = async (ctx) => {
         }
 
         let tokenObj = {
-            GameUserID:existing.GameUserID, 
-            GameDeviceUID:existing.GameDeviceUID
+            game_user_id: existing.game_user_id,
+            game_device_id: existing.game_device_id
         };
         let token = auth.signToken(tokenObj);
         
