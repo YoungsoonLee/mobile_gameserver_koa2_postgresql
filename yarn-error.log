@@ -1,0 +1,41 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.3.2/libexec/bin/yarn.js add koa
+
+PATH: 
+  /Users/leeyoungsoon/.local/bin:/Users/leeyoungsoon/bin:/usr/local/bin:/usr/local/mysql/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Users/leeyoungsoon/.local/bin:/Users/leeyoungsoon/bin:/usr/local/mysql/bin:/Users/leeyoungsoon/my_task/Go/bin:/Users/leeyoungsoon/Library/Android/sdk/platform-tools:/Users/leeyoungsoon/Library/Android/sdk/tools:/Users/leeyoungsoon/my_task/Go/bin:/Users/leeyoungsoon/Library/Android/sdk/platform-tools:/Users/leeyoungsoon/Library/Android/sdk/tools
+
+Yarn version: 
+  1.3.2
+
+Node version: 
+  9.2.0
+
+Platform: 
+  darwin x64
+
+npm manifest: 
+  {
+    "name": "gameserver_koa_azure",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "start:dev": "NODE_PATH=src nodemon --watch src/ src/index.js",
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: https://registry.yarnpkg.com/koa: ETIMEDOUT
+      at Timeout._onTimeout (/usr/local/Cellar/yarn/1.3.2/libexec/lib/cli.js:123749:19)
+      at ontimeout (timers.js:478:11)
+      at tryOnTimeout (timers.js:302:5)
+      at Timer.listOnTimeout (timers.js:262:5)
